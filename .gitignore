@@ -1,0 +1,2 @@
+web/node_modules
+# Ignore the node_modules directory in the web folder
