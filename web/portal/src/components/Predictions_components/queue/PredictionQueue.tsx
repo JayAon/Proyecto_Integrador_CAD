@@ -3,6 +3,8 @@ import { TrashIcon, XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/solid
 import { motion, AnimatePresence } from "framer-motion";
 import { Prediction } from "../../../types/prediction";
 
+import DownloadPredictions from "./downloadPredictions";
+
 interface PredictionQueueProps {
   initialPredictions?: Prediction[];
   newPrediction?: Prediction | null;
@@ -65,13 +67,17 @@ return (
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Cola de Predicciones ({predictions.length})</h2>
         {predictions.length > 0 && (
+          <div>
+
+          <DownloadPredictions data={predictions} fileName="predicciones" />
           <button
             onClick={clearAll}
             title="Borrar todas las predicciones"
             className="text-red-500 hover:text-red-700 transition"
           >
-            <XMarkIcon className="h-6 w-6" />
-          </button>
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+          </div>
         )}
       </div>
 
