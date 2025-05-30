@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { TrashIcon, XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
-export interface Prediction {
-  referencia: string;
-  maquina: string;
-  seccion: string;
-  proceso: string;
-  usuario: string;
-  hora_inicio: string;
-  dia_semana_inicio: string;
-  turno: string;
-  fabricadas: string;
-  duracion: number;
-}
+import { Prediction } from "../../../types/prediction";
 
 interface PredictionQueueProps {
   initialPredictions?: Prediction[];
@@ -106,7 +95,7 @@ return (
               transition={{ duration: 0.3 }}
               className="border border-gray-300 dark:border-gray-600 rounded p-3 relative"
             >
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-start">
                 <div className="flex-1">
                   <p><strong>Referencia:</strong> {p.referencia}</p>
                   <p><strong>Máquina:</strong> {p.maquina}</p>
@@ -135,7 +124,7 @@ return (
                   <p><strong>Duración:</strong> {p.duracion.toFixed(2)} minutos</p>
                 </div>
 
-                <div className="flex flex-row md:flex-col items-center mt-3 md:mt-0 ml-0 md:ml-3 space-x-3 md:space-x-0 md:space-y-2">
+                <div className="flex flex-row md:flex-col items-start mt-3 md:mt-0 ml-0 md:ml-3 space-x-3 md:space-x-0 md:space-y-2 min-h-[48px]">
                   <button
                     onClick={() => toggleDetails(i)}
                     title={p.showDetails ? "Mostrar menos detalles" : "Mostrar más detalles"}
@@ -159,6 +148,7 @@ return (
     </div>
   </div>
 );
+
 
 
 };

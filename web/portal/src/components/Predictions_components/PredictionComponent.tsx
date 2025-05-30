@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 //import logo from './logo.svg';
 
 
-import {fetchFormOptions} from '../handlers/formOptionsHandler';
-import { getDurationPrediction } from '../handlers/predictionHandler';
-import PredictionQueue, { Prediction } from './PredictionQueue';
+import {fetchFormOptions} from '../../handlers/formOptionsHandler';
+import { getDurationPrediction } from '../../handlers/predictionHandler';
+import PredictionQueue from './queue/PredictionQueue';
+import { Prediction } from '../../types/prediction';
 
 function formatNumberWithThousands(value: string) {
   // Quita todo excepto números

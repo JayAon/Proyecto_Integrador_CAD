@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import PredictionsComponent from "./components/PredictionComponent";
-import BIComponent from "./components/BIComponent";
+import PredictionsComponent from "./components/Predictions_components/PredictionComponent";
 import HamburgerMenu from "./components/HamburgerMenu";
+import BITableFilter from "./components/BI_components/BITableFilter";
+import ProductionByMachine from "./components/BI_components/charts/ProductionbyMachine";
+import BICharts from "./components/BI_components/BICharts";
+
 
 function App() {
   const [viewMode, setViewMode] = useState<"dark" | "light">("dark");
@@ -25,7 +28,8 @@ function App() {
       <HamburgerMenu viewMode={viewMode} toggleViewMode={toggleViewMode} />
       <Routes>
         <Route path="/" element={<PredictionsComponent />} />
-        <Route path="/bi" element={<BIComponent />} />
+        <Route path="/table" element={<BITableFilter />} />
+        <Route path="/charts" element={<BICharts />} />
       </Routes>
     </BrowserRouter>
   );
