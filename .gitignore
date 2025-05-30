@@ -1,2 +1,6 @@
-web/node_modules
+web/portal/node_modules
+
 # Ignore the node_modules directory in the web folder
+
+.env
+# Ignore the .env file in the root directory
