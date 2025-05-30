@@ -70,8 +70,9 @@ const PredictionQueue: React.FC<PredictionQueueProps> = ({
     return `${hours.toString().padStart(2, '0')} horas : ${minutes.toString().padStart(2, '0')} minutos y ${seconds.toString().padStart(2, '0')} segundos`;
   };
 
-  return (
-    <div className="w-96 max-h-screen overflow-auto p-4 bg-white dark:bg-gray-800 rounded shadow-md flex flex-col">
+return (
+  <div className="flex justify-center p-4">
+    <div className="w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[80vh] md:max-h-[90vh] overflow-auto p-4 bg-white dark:bg-gray-800 rounded shadow-md flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Cola de Predicciones ({predictions.length})</h2>
         {predictions.length > 0 && (
@@ -87,8 +88,8 @@ const PredictionQueue: React.FC<PredictionQueueProps> = ({
 
       {predictions.length > 0 ? (
         <div>
-        <h3>Duracion total</h3>
-        <p className="text-sm text-gray-600 mb-2">{formatTime(predictions)}</p>
+          <h3>Duracion total</h3>
+          <p className="text-sm text-gray-600 mb-2">{formatTime(predictions)}</p>
         </div>
       ) : (
         <p className="text-sm text-gray-500">No hay predicciones aún.</p>
@@ -105,65 +106,61 @@ const PredictionQueue: React.FC<PredictionQueueProps> = ({
               transition={{ duration: 0.3 }}
               className="border border-gray-300 dark:border-gray-600 rounded p-3 relative"
             >
-              <div className="flex justify-between items-start">
-              <div className="flex-1">
-  <p>
-    <strong>Referencia:</strong> {p.referencia}
-  </p>
-  <p><strong>Máquina:</strong> {p.maquina}</p>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div className="flex-1">
+                  <p><strong>Referencia:</strong> {p.referencia}</p>
+                  <p><strong>Máquina:</strong> {p.maquina}</p>
 
-  <AnimatePresence initial={false}>
-    {p.showDetails && (
-      <motion.div
-        key="details"
-        initial={{ height: 0, opacity: 0 }}
-        animate={{ height: "auto", opacity: 1 }}
-        exit={{ height: 0, opacity: 0 }}
-        style={{ overflow: "hidden" }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        
-        <p><strong>Sección:</strong> {p.seccion}</p>
-        <p><strong>Proceso:</strong> {p.proceso}</p>
-        <p><strong>Usuario:</strong> {p.usuario}</p>
-        <p><strong>Hora inicio:</strong> {p.hora_inicio}</p>
-        <p><strong>Día semana:</strong> {p.dia_semana_inicio}</p>
-        <p><strong>Turno:</strong> {p.turno}</p>
-        <p><strong>Fabricadas:</strong> {p.fabricadas}</p>
-      </motion.div>
-    )}
-  </AnimatePresence>
+                  <AnimatePresence initial={false}>
+                    {p.showDetails && (
+                      <motion.div
+                        key="details"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        style={{ overflow: "hidden" }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <p><strong>Sección:</strong> {p.seccion}</p>
+                        <p><strong>Proceso:</strong> {p.proceso}</p>
+                        <p><strong>Usuario:</strong> {p.usuario}</p>
+                        <p><strong>Hora inicio:</strong> {p.hora_inicio}</p>
+                        <p><strong>Día semana:</strong> {p.dia_semana_inicio}</p>
+                        <p><strong>Turno:</strong> {p.turno}</p>
+                        <p><strong>Fabricadas:</strong> {p.fabricadas}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-  {/* Duración siempre visible */}
-  <p>
-    <strong>Duración:</strong> {p.duracion.toFixed(2)} minutos
-  </p>
-</div>
+                  <p><strong>Duración:</strong> {p.duracion.toFixed(2)} minutos</p>
+                </div>
 
-              <div className="flex flex-col items-center ml-3 space-y-2">
-                <button
-                  onClick={() => toggleDetails(i)}
-                  title={p.showDetails ? "Mostrar menos detalles" : "Mostrar más detalles"}
-                  className="text-blue-600 hover:text-blue-800 transition"
-                >
-                  <ChevronDownIcon className={`h-6 w-6 transform transition-transform duration-200 ${p.showDetails ? "rotate-180" : "rotate-0"}`} />
-                </button>
-                <button
-                  onClick={() => handleDelete(i)}
-                  title="Borrar predicción"
-                  className="text-red-600 hover:text-red-800 transition"
-                >
-                  <TrashIcon className="h-6 w-6" />
-                </button>
+                <div className="flex flex-row md:flex-col items-center mt-3 md:mt-0 ml-0 md:ml-3 space-x-3 md:space-x-0 md:space-y-2">
+                  <button
+                    onClick={() => toggleDetails(i)}
+                    title={p.showDetails ? "Mostrar menos detalles" : "Mostrar más detalles"}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <ChevronDownIcon className={`h-6 w-6 transform transition-transform duration-200 ${p.showDetails ? "rotate-180" : "rotate-0"}`} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(i)}
+                    title="Borrar predicción"
+                    className="text-red-600 hover:text-red-800 transition"
+                  >
+                    <TrashIcon className="h-6 w-6" />
+                  </button>
+                </div>
               </div>
-            </div>
             </motion.li>
           ))}
         </AnimatePresence>
       </ul>
-
     </div>
-  );
+  </div>
+);
+
+
 };
 
 export default PredictionQueue;
