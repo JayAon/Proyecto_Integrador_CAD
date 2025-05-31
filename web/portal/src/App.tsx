@@ -6,6 +6,8 @@ import HamburgerMenu from "./components/HamburgerMenu";
 import BITableFilter from "./components/BI_components/BITableFilter";
 import ProductionByMachine from "./components/BI_components/charts/ProductionbyMachine";
 import BICharts from "./components/BI_components/BICharts";
+import Alert from "./components/BI_components/alerts/alert";
+import BIAlert from "./components/BI_components/alerts/BIAlert";
 
 
 function App() {
@@ -30,6 +32,7 @@ function App() {
         <Route path="/" element={<PredictionsComponent />} />
         <Route path="/table" element={<BITableFilter />} />
         <Route path="/charts" element={<BICharts />} />
+        <Route path = "/alerts" element={<BIAlert message="Alerta de ejemplo" type="info" />} />
       </Routes>
     </BrowserRouter>
   );

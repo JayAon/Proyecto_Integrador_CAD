@@ -6,6 +6,7 @@ import {fetchFormOptions} from '../../handlers/formOptionsHandler';
 import { getDurationPrediction } from '../../handlers/predictionHandler';
 import PredictionQueue from './queue/PredictionQueue';
 import { Prediction } from '../../types/prediction';
+import Loader from '../loader';
 
 function formatNumberWithThousands(value: string) {
   // Quita todo excepto números
@@ -23,6 +24,8 @@ function formatNumberWithThousands(value: string) {
 }
 
 function PredictionsComponent() {
+  const [loadingOptions, setLoadingOptions] = useState(true);
+  
 
   //Estado para errores de validación
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
@@ -47,6 +50,11 @@ function PredictionsComponent() {
   proceso: [],
   usuario: [],
 });
+// useEffect(() => {
+//   fetchFormOptions()
+//     .then((data: any) => setOptions(data))
+//     .finally(() => setLoadingOptions(false));
+// }, []);
 
   const [formData, setFormData] = useState({
   referencia: '',
@@ -59,13 +67,20 @@ function PredictionsComponent() {
   turno: '',
   fabricadas:'',
 });
-  //Mock data fetch
-  //Simula la obtención de datos de un API
-  useEffect(() => {
-  fetchFormOptions().then((data:any) => setOptions(data))
-}, [])
 
-  
+  useEffect(() => {
+    setLoadingOptions(true);
+    fetchFormOptions()
+      .then((data:any) => {
+        setOptions(data);
+      })
+      .catch((error) => {
+        console.error("Error al cargar las opciones del formulario:", error);
+      })
+      .finally(() => {
+        setLoadingOptions(false);
+      });
+  }, []);
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     
@@ -149,7 +164,9 @@ const handleNewPrediction = (formData: any, result: { duracion: number }) => {
   }
   };
 
-
+if (loadingOptions) {
+  return <Loader message="Cargando opciones del formulario..." />;
+}
 
 return (
   <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col md:flex-row items-start justify-center gap-6 p-4">
