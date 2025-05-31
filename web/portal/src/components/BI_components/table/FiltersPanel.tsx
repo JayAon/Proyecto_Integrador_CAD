@@ -2,9 +2,6 @@ import { useState, useEffect } from "react"
 import { Pedido } from "../../../types/pedido"
 import { FilterConfig } from "../../../types/filter_config"
 
-
-
-
 type Props = {
   data: Pedido[]
   onFilter: (filtered: Pedido[]) => void
@@ -13,7 +10,8 @@ type Props = {
 
 export default function FilterPanel({ data, onFilter, filters }: Props) {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
-
+  const [limit, setLimit] = useState<number | null>(null)
+  const maxLimit = 5000 // Limite maximo de pedidos a mostrar
   // Obtener valores únicos por filtro
   const uniqueValues = (key: keyof Pedido): string[] => {
     return Array.from(new Set(data.map((d) => d[key]))).filter(Boolean) as string[]
@@ -23,8 +21,13 @@ export default function FilterPanel({ data, onFilter, filters }: Props) {
     setSelectedFilters(prev => ({ ...prev, [key]: value }))
   }
 
+  const handleLimitChange = (value: string) => {
+    setLimit(value ? parseInt(value) : null)
+  }
+
   const resetFilters = () => {
     setSelectedFilters({})
+    setLimit(maxLimit)
   }
 
   useEffect(() => {
@@ -36,8 +39,12 @@ export default function FilterPanel({ data, onFilter, filters }: Props) {
       }
     }
 
+    if (limit !== null) {
+      filtered = filtered.slice(0, limit)
+    }
+
     onFilter(filtered)
-  }, [selectedFilters, data])
+  }, [selectedFilters, limit, data])
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl p-4 mb-6 shadow-sm">
@@ -61,6 +68,22 @@ export default function FilterPanel({ data, onFilter, filters }: Props) {
             </select>
           </div>
         ))}
+
+        <div>
+          <label className="block text-sm mb-1">Limite</label>
+          <select
+            value={limit ?? ""}
+            onChange={(e) => handleLimitChange(e.target.value)}
+            className="w-32 px-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm"
+          >
+            <option value={`${maxLimit}`}>Max</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
 
         <button
           onClick={resetFilters}
