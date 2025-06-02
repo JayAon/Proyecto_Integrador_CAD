@@ -6,3 +6,5 @@ web/portal/node_modules
 # Ignore the .env file in the root directory
 # Ignore .zip files
 *.zip
+.vscode/
+# Ignore Visual Studio Code settings directory
