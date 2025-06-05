@@ -9,21 +9,19 @@ import Loader from "../loader";
 const BIComponent = () => {
   const [allPedidos, setAllPedidos] = useState<Pedido[]>([])
   const [filteredPedidos, setFilteredPedidos] = useState<Pedido[]>([])
-  const maxLimit = 1000 
   const [loadingOptions, setLoadingOptions] = useState(true);
+  const [dataLoadingOptions,setdataLoadingOptions] = useState(false);
 const [error, setError] = useState<string | null>(null);
 
 
   const filterConfig:FilterConfig[] = [
   { key: "Maquina", label: "Maquina" },
   { key: "Usuario", label: "Usuario" },
-  { key: "Estado", label: "Estado" },
-  { key: "Pedido", label: "Pedido" },
-  { key: "OP", label: "OP" }]
+  { key: "Estado", label: "Estado" }]
    
 
   useEffect(() => {
-  getPedidosData(maxLimit)
+  getPedidosData()
     .then(data => {
       setAllPedidos(data);
       setFilteredPedidos(data);
@@ -44,8 +42,18 @@ if (loadingOptions) {
       <h1 className="text-2xl font-bold mb-6">Dashboard de Produccion</h1>
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4">
-        <FilterPanel data={allPedidos} onFilter={setFilteredPedidos} filters={filterConfig} />
-        <DataTable data={filteredPedidos} />
+        <FilterPanel data={allPedidos} onFilter={setFilteredPedidos} filters={filterConfig} setLoading={setdataLoadingOptions}/>
+        <div className="relative">
+        <div className="relative">
+          <DataTable data={filteredPedidos} />
+
+          {dataLoadingOptions && (
+            <div className="absolute inset-0 items-center justify-center rounded-2xl z-10">
+              <Loader message="Cargando tabla de datos..." opacity={70} />
+            </div>
+          )}
+      </div>  
+      </div>
       </div>
     </div>
   )

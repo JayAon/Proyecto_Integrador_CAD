@@ -2,13 +2,16 @@ import { Pedido } from "../types/pedido";
 import mockData from "../data/mockData.json";
 
 // En el futuro puedes cambiar esta función para hacer fetch desde S3
-export const getPedidosData = async (limit: number = 10): Promise<Pedido[]> => {
+export const getPedidosData = async (
+  baseDatelimit: string = "2024-01-01",
+  daysBack = 10
+): Promise<Pedido[]> => {
   // Aquí puedes dejar un condicional para cambiar entre local o remoto
   const useRemote = true;
 
   if (useRemote) {
     const response = await fetch(
-      `https://4wwqgxtrfd5cvd4nzexvqhtmnu0nnrve.lambda-url.us-east-1.on.aws/?limit=${limit}`
+      `https://4wwqgxtrfd5cvd4nzexvqhtmnu0nnrve.lambda-url.us-east-1.on.aws/?baseDate=${baseDatelimit}&daysBack=${daysBack}`
     );
     const jsonResponse = await response.json();
 

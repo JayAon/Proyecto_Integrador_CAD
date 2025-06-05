@@ -14,11 +14,11 @@ export default function BICharts() {
   const [filteredPedidos, setFilteredPedidos] = useState<Pedido[]>([])
   //Agregar loader
   const [loadingOptions, setLoadingOptions] = useState(true);
+  const [dataLoadingOptions,setdataLoadingOptions] = useState(false);
 
-
-  const maxLimit = 1000; // Limite maximo de pedidos a mostrar
+  
   useEffect(() => {
-    getPedidosData(maxLimit).then(data => {
+    getPedidosData().then(data => {
       setAllPedidos(data)
       setFilteredPedidos(data)
     }).catch((error) => {
@@ -30,11 +30,9 @@ export default function BICharts() {
   }, [])
 
   const filterConfig:FilterConfig[] = [
-  { key: "Maquina", label: "Maquina" },
-  { key: "Usuario", label: "Usuario" },
-  { key: "Estado", label: "Estado" },
-  { key: "Pedido", label: "Pedido" },
-  { key: "OP", label: "OP" }]
+    { key: "Maquina", label: "Maquina" },
+    { key: "Usuario", label: "Usuario" },
+    { key: "Estado", label: "Estado" }]
 
   if (loadingOptions) {
   return <Loader message="Cargando gráficos..." />;
@@ -42,13 +40,21 @@ export default function BICharts() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300 pl-20 pt-4 pr-4">
-      <FilterPanel data={allPedidos} onFilter={setFilteredPedidos} filters={filterConfig} />
+      <FilterPanel data={allPedidos} onFilter={setFilteredPedidos} filters={filterConfig} setLoading={setdataLoadingOptions}/>
       <h1 className="text-2xl font-bold mb-6">BI Charts</h1>
-      
+      <div className="relative">
       <ProductionByMachine data={filteredPedidos}/>
       <DurationChart data={filteredPedidos} />
       <StatusChart data={filteredPedidos} />
       <TotalDurationBySection data={filteredPedidos} />
+      {dataLoadingOptions && (
+            <div className="absolute inset-0 items-center justify-center rounded-2xl z-10">
+              <Loader message="Cargando datos a graficar..." opacity={70} />
+            </div>
+          )}
+      </div>
+      
+      
     </div>
   );
 }

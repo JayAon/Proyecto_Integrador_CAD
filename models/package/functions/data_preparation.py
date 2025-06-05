@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OrdinalEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 from sklearn.linear_model import LassoCV
 import statsmodels.api as sm
 def prepare_regression_data(
@@ -17,7 +17,7 @@ def prepare_regression_data(
     - Split into features and target
     - Encode categorical features with OrdinalEncoder
     - Scale numeric features with StandardScaler (optional)
-
+    - Add constant: Adds a constant to the dataset (optional)
     Returns:
     - X_train, X_test, y_train, y_test: prepared data splits
     - encoder: fitted OrdinalEncoder or None
@@ -67,7 +67,8 @@ def prepare_classification_data(
     target_column: str,
     test_size: float = 0.2,
     random_state: int = 42,
-    scale_numeric: bool = True
+    scale_numeric: bool = True,
+    stratify:bool= True
 ):
     """
     Prepare data for classification modeling:
@@ -75,6 +76,7 @@ def prepare_classification_data(
     - Encode categorical features with OrdinalEncoder
     - Encode target variable with OrdinalEncoder if categorical
     - Scale numeric features with StandardScaler (optional)
+    - Stratify bool
 
     Returns:
     - X_train, X_test, y_train, y_test: prepared data splits (arrays)
@@ -96,9 +98,14 @@ def prepare_classification_data(
     y = df_copy[target_column].copy()
 
     # Split dataset
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
+    if(stratify):
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=random_state, stratify=y
+        )
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=random_state
+        )
 
     # Encode categorical features in X
     if categorical_features:
@@ -168,7 +175,7 @@ def select_features_lasso(X_train, y_train, feature_names=None, X_test=None, y_t
             print(f"\nR² on test set: {lasso.score(X_test, y_test):.4f}")
 
     return selected_features
-def select_features_ols(X_train, y_train, feature_names=None, p_threshold=0.05):
+def select_features_ols(X_train, y_train, feature_names=None, p_threshold=0.05,constant = True):
     
     """
     Select significant features based on OLS p-values.
@@ -178,9 +185,10 @@ def select_features_ols(X_train, y_train, feature_names=None, p_threshold=0.05):
     - y_train: Series or array of target values
     - feature_names: list of feature names (if X_train is array)
     - p_threshold: p-value threshold for significance
+    - Constant: bool - Add the constant to the OLS model
 
     Returns:
-    - significant_features: list of features with p-value <= threshold
+    - significant_features: list of features with p-value <= threshold without the const
     - ols_result: statsmodels RegressionResults object
     """
     if not isinstance(X_train, pd.DataFrame):
@@ -195,12 +203,13 @@ def select_features_ols(X_train, y_train, feature_names=None, p_threshold=0.05):
     y_train_series = pd.Series(y_train).reset_index(drop=True)
 
     # Add constant term for intercept
-    X_train_df = sm.add_constant(X_train_df)
+    if(constant):
+        X_train_df = sm.add_constant(X_train_df)
 
     model = sm.OLS(y_train_series, X_train_df)
     result = model.fit()
 
-    p_values = result.pvalues.drop("const", errors="ignore")
+    p_values = result.pvalues.drop("const", errors='ignore')
     significant_features = p_values[p_values <= p_threshold].index.tolist()
 
     print("P-values:")

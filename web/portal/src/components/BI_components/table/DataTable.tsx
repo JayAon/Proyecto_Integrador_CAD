@@ -11,6 +11,8 @@ const DataTable = ({ data }: Props) => {
       <table className="min-w-full table-auto border-collapse text-sm">
         <thead>
           <tr className="bg-gray-100 dark:bg-gray-700 text-left">
+            <th className="px-4 py-2 font-semibold">Fecha Inicio</th>
+            <th className="px-4 py-2 font-semibold">Fecha Fin</th>
             <th className="px-4 py-2 font-semibold">Pedido</th>
             <th className="px-4 py-2 font-semibold">OP</th>
             <th className="px-4 py-2 font-semibold">Maquina</th>
@@ -27,6 +29,8 @@ const DataTable = ({ data }: Props) => {
                 idx % 2 === 0 ? "bg-gray-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"
               }`}
             >
+              <td className="px-4 py-2">{row.FechaInicio}</td>
+              <td className="px-4 py-2">{row.FechaFin}</td>
               <td className="px-4 py-2">{row.Pedido}</td>
               <td className="px-4 py-2">{row.OP}</td>
               <td className="px-4 py-2">{row.Maquina}</td>

@@ -1,8 +1,12 @@
 // components/Loader.tsx
 import React from 'react';
 
-const Loader: React.FC<{ message?: string }> = ({ message = "Cargando..." }) => (
-  <div className="flex justify-center items-center min-h-screen bg-white dark:bg-gray-900">
+type Props = {
+  message?: string;
+  opacity?:number
+};
+const Loader: React.FC<Props> = ({ message = "Cargando...", opacity = 0 }) => (
+  <div className={`flex justify-center items-center min-h-screen bg-white dark:bg-gray-900 bg-opacity-${opacity} dark:bg-opacity-${opacity}`}>
     <svg
       className="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400 mr-2"
       xmlns="http://www.w3.org/2000/svg"

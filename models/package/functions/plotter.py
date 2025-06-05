@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-
+import numpy as np
 def plot_cv_metric_distribution(all_grid_results, metric_name="rmse", maximize=False):
     """
     Plot distribution of a CV metric per model with annotations of best and worst params,
@@ -122,3 +122,96 @@ def plot_best_metric_per_model(all_grid_results, metric='mean_test_score', maxim
     plt.show()
 
     return best_metric_df
+
+
+def plot_dataprediction(y_train, y_test, y_pred_train, y_pred_test):
+    # Concatenar valores reales y predichos
+    y_real = np.concatenate([y_train, y_test])
+    y_pred = np.concatenate([y_pred_train, y_pred_test])
+
+    # Índice donde termina el entrenamiento
+    split_index = len(y_train)
+
+    plt.figure(figsize=(12,6))
+    plt.plot(y_real, label="Real", color="blue")
+    plt.plot(y_pred, label="Predicción", color="red", linestyle="--")
+
+    # Línea vertical para indicar la separación entre train y test
+    plt.axvline(x=split_index, color="black", linestyle=":", label="Inicio Test")
+
+    plt.xlabel("Índice de muestra")
+    plt.ylabel("Valor")
+    plt.title("Valores reales vs Predicciones (Entrenamiento + Test)")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
+
+def plot_dataprediction_comparison(y_train,y_pred_train,y_test,y_pred_test):
+    plt.figure(figsize=(12, 5))
+
+    # Plot de entrenamiento
+    plt.subplot(1, 2, 1)
+    plt.scatter(y_train, y_pred_train, alpha=0.6, color='blue', label='Predicciones')
+    plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], 'k--', lw=2, label='Referencia')
+    plt.xlabel('Valor real')
+    plt.ylabel('Predicción')
+    plt.title('Entrenamiento')
+    plt.legend()
+
+    # Plot de test
+    plt.subplot(1, 2, 2)
+    plt.scatter(y_test, y_pred_test, alpha=0.6, color='green', label='Predicciones')
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2, label='Referencia')
+    plt.xlabel('Valor real')
+    plt.ylabel('Predicción')
+    plt.title('Test')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
+
+
+def corr_matrix_plot(corr_matrix):
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+    plt.title("Matriz de correlación entre variables numericas y categoricas codificadas")
+    plt.show()
+
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_combined_confusion_matrix(y_train, y_pred_train, y_test, y_pred_test, labels=None):
+    y_all = np.concatenate([y_train, y_test])
+    y_pred_all = np.concatenate([y_pred_train, y_pred_test])
+
+    cm = confusion_matrix(y_all, y_pred_all, labels=labels)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    disp.plot(cmap="Blues")
+    plt.title("Matriz de Confusion (Train + Test)")
+    plt.show()
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+def plot_confusion_matrices_separated(y_train, y_pred_train, y_test, y_pred_test, labels=None):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Entrenamiento
+    cm_train = confusion_matrix(y_train, y_pred_train, labels=labels)
+    disp_train = ConfusionMatrixDisplay(confusion_matrix=cm_train, display_labels=labels)
+    disp_train.plot(ax=axes[0], cmap='Blues', values_format='d')
+    axes[0].set_title("Matriz de Confusión - Entrenamiento")
+
+    # Test
+    cm_test = confusion_matrix(y_test, y_pred_test, labels=labels)
+    disp_test = ConfusionMatrixDisplay(confusion_matrix=cm_test, display_labels=labels)
+    disp_test.plot(ax=axes[1], cmap='Blues', values_format='d')
+    axes[1].set_title("Matriz de Confusión - Test")
+
+    plt.tight_layout()
+    plt.show()

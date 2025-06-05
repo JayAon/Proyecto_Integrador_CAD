@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react"
 import { Pedido } from "../../../types/pedido"
 import { FilterConfig } from "../../../types/filter_config"
+import { getPedidosData } from "../../../handlers/getData"
+import { ArrowPathIcon, TrashIcon } from "@heroicons/react/24/solid"
+
 
 type Props = {
   data: Pedido[]
   onFilter: (filtered: Pedido[]) => void
   filters: FilterConfig[]
+  setLoading?: (loading: boolean) => void
 }
 
-export default function FilterPanel({ data, onFilter, filters }: Props) {
+export default function FilterPanel({ data, onFilter, filters,setLoading }: Props) {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
-  const [limit, setLimit] = useState<number | null>(null)
-  const maxLimit = 1000 // Limite maximo de pedidos a mostrar
-  // Obtener valores únicos por filtro
+  const [daysBack, setDaysBack] = useState<number | null>(10)
+  const [baseDate, setBaseDate] = useState<string>("2024-01-01")
+  const [buttonEnabled, setButtonEnabled] = useState(false);
   const uniqueValues = (key: keyof Pedido): string[] => {
     return Array.from(new Set(data.map((d) => d[key]))).filter(Boolean) as string[]
   }
@@ -21,13 +25,40 @@ export default function FilterPanel({ data, onFilter, filters }: Props) {
     setSelectedFilters(prev => ({ ...prev, [key]: value }))
   }
 
-  const handleLimitChange = (value: string) => {
-    setLimit(value ? parseInt(value) : null)
+  const handleDaysBackChange = (value: string) => {
+    setDaysBack(value ? parseInt(value) : null)
+    setButtonEnabled(true)
+  }
+
+  const handleBaseDateChange = (value: string) => {
+    setBaseDate(value)
+    setButtonEnabled(true)
   }
 
   const resetFilters = () => {
-    setSelectedFilters({})
-    setLimit(maxLimit)
+    setSelectedFilters({});
+    setDaysBack(10);
+    setBaseDate("2024-01-01");
+    setButtonEnabled(true);
+
+  }
+
+  const handleFetchPedidos = async () => {
+    if (!baseDate || daysBack === null) {
+      alert("Selecciona fecha base y cantidad de dias.")
+      return
+    }
+    try {
+      if (setLoading) setLoading(true)
+      const nuevosDatos = await getPedidosData(baseDate, daysBack)
+      onFilter(nuevosDatos)
+    } catch (error) {
+      console.error("Error al obtener pedidos:", error)
+    }
+    finally{
+      if (setLoading) setLoading(false)
+      setButtonEnabled(false)
+    }
   }
 
   useEffect(() => {
@@ -38,13 +69,8 @@ export default function FilterPanel({ data, onFilter, filters }: Props) {
         filtered = filtered.filter((item) => item[key as keyof Pedido] == value)
       }
     }
-
-    if (limit !== null) {
-      filtered = filtered.slice(0, limit)
-    }
-
     onFilter(filtered)
-  }, [selectedFilters, limit, data])
+  }, [selectedFilters, daysBack, baseDate, data])
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl p-4 mb-6 shadow-sm">
@@ -70,30 +96,48 @@ export default function FilterPanel({ data, onFilter, filters }: Props) {
         ))}
 
         <div>
-          <label className="block text-sm mb-1">Limite</label>
+          <label className="block text-sm mb-1">Fecha base</label>
+          <input
+            type="date"
+            value={baseDate}
+            defaultValue={"2024-01-01"}
+            onChange={(e) => handleBaseDateChange(e.target.value)}
+            className="w-40 px-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Ultimos dias</label>
           <select
-            value={limit ?? ""}
-            onChange={(e) => handleLimitChange(e.target.value)}
+            value={daysBack ?? ""}
+            onChange={(e) => handleDaysBackChange(e.target.value)}
             className="w-32 px-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm"
           >
-            <option value={`${maxLimit}`}>Max</option>
-            <option value="200">200</option>
-            <option value="100">100</option>
-            <option value="50">50</option>
-            <option value="20">20</option>
-            <option value="10">10</option>
-            
-            
-            
-            
+            <option value="10">10 dias</option>
+            <option value="15">15 dias</option>
+            <option value="30">30 dias</option>
+            <option value="90">90 dias</option>
+            <option value="-1">Todo antes de</option>
           </select>
         </div>
 
+       {buttonEnabled && (
+          <button
+            onClick={handleFetchPedidos}
+            className="px-2 py-2 rounded-md text-sm transition"
+            title="Actualizar datos"
+          >
+            <ArrowPathIcon className="h-6 w-6 text-orange-500 dark:text-orange-400" />
+          </button>
+        )}
+
+
         <button
           onClick={resetFilters}
-          className="ml-auto px-4 py-2 rounded-md text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          className="px-2 py-2 rounded-md text-sm transition"
+          title="Limpiar filtros"
         >
-          Limpiar filtros
+          <TrashIcon className={`h-6 w-6 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600"} `}/>
         </button>
       </div>
     </div>

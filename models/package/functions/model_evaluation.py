@@ -1,7 +1,7 @@
 import time
 import pandas as pd
 from sklearn.model_selection import GridSearchCV, cross_val_predict
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, root_mean_squared_error
+from sklearn.metrics import auc, mean_absolute_error, mean_squared_error, precision_recall_curve, r2_score, roc_auc_score, root_mean_squared_error
 
 
 def evaluate_regression_models(
@@ -161,6 +161,13 @@ def evaluate_classification_models(
         rec_cv = recall_score(y_train, y_pred_cv, average=average, zero_division=0)
         f1_cv = f1_score(y_train, y_pred_cv, average=average, zero_division=0)
 
+        y_score_cv = cross_val_predict(best_model, X_train, y_train, cv=cv, method='predict_proba')[:, 1]
+
+        # Calcular ROC AUC en entrenamiento CV:
+        roc_auc_cv = roc_auc_score(y_train, y_score_cv)
+
+        precision_cv, recall_cv, _ = precision_recall_curve(y_train, y_score_cv)
+        auc_pr_cv = auc(recall_cv, precision_cv)
         # Metrics on test set (if provided)
         if X_test is not None and y_test is not None:
             y_pred_test = best_model.predict(X_test)
@@ -168,16 +175,25 @@ def evaluate_classification_models(
             prec_test = precision_score(y_test, y_pred_test, average=average, zero_division=0)
             rec_test = recall_score(y_test, y_pred_test, average=average, zero_division=0)
             f1_test = f1_score(y_test, y_pred_test, average=average, zero_division=0)
+            y_score_test = best_model.predict_proba(X_test)[:, 1]
+            roc_auc_test = roc_auc_score(y_test, y_score_test)
+            # Curva Precision-Recall Test
+            precision_test, recall_test, _ = precision_recall_curve(y_test, y_score_test)
+            auc_pr_test = auc(recall_test, precision_test)
         else:
-            acc_test = prec_test = rec_test = f1_test = None
+            acc_test = prec_test = rec_test = f1_test =roc_auc_test= None
 
         result_metrics = {
             "Best Model": best_model,
             "Best Params": grid.best_params_,
+            "ROC AUC CV": roc_auc_cv,
+            "PR AUC CV":auc_pr_cv,
             "Accuracy CV": acc_cv,
             "Precision CV": prec_cv,
             "Recall CV": rec_cv,
             "F1 Score CV": f1_cv,
+            "ROC AUC Test": roc_auc_test,
+            "PR AUC Test":auc_pr_test,
             "Accuracy Test": acc_test,
             "Precision Test": prec_test,
             "Recall Test": rec_test,
