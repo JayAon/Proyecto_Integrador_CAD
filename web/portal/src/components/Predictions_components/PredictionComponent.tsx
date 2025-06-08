@@ -7,6 +7,9 @@ import { getDurationPrediction } from '../../handlers/predictionHandler';
 import PredictionQueue from './queue/PredictionQueue';
 import { Prediction } from '../../types/prediction';
 import Loader from '../loader';
+import { FormDataStructure } from '../../types/form';
+
+
 
 function formatNumberWithThousands(value: string) {
   // Quita todo excepto números
@@ -50,23 +53,17 @@ function PredictionsComponent() {
   proceso: [],
   usuario: [],
 });
-// useEffect(() => {
-//   fetchFormOptions()
-//     .then((data: any) => setOptions(data))
-//     .finally(() => setLoadingOptions(false));
-// }, []);
 
-  const [formData, setFormData] = useState({
-  referencia: '',
-  maquina: '',
-  seccion: '',
-  proceso: '',
-  usuario: '',
-  hora_inicio: '',
-  dia_semana_inicio: '',
-  turno: '',
-  fabricadas:'',
-});
+
+   const [formData, setFormData] = useState<FormDataStructure>({
+    referencia: '',
+    maquina: '',
+    seccion: '',
+    proceso: '',
+    usuario: '',
+    fabricadas: '',
+    turno: '',
+  });
 
   useEffect(() => {
     setLoadingOptions(true);
@@ -89,13 +86,6 @@ function PredictionsComponent() {
   }
   };
   
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, hora_inicio: e.target.value });
-    
-    if (errors.hora_inicio) {
-      setErrors((prev) => ({ ...prev, hora_inicio: false }));
-    }
-  };
 
   const handleFabricadasNumericChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Obtenemos el valor formateado con separadores
@@ -106,24 +96,19 @@ function PredictionsComponent() {
       setErrors((prev) => ({ ...prev, fabricadas: false }));
     }
   };
-const handleNewPrediction = (formData: any, result: { duracion: number }) => {
-    const newEntry: Prediction = { ...formData, duracion: result.duracion };
-    setLastPrediction(newEntry);
-  };
+
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const requiredFields = [
-      "referencia",
       "maquina",
       "seccion",
       "proceso",
       "usuario",
-      "hora_inicio",
-      "dia_semana_inicio",
-      "turno",
       "fabricadas",
+      "turno",
+      "referencia"
     ];
 
     let newErrors: { [key: string]: boolean } = {};
@@ -155,8 +140,8 @@ const handleNewPrediction = (formData: any, result: { duracion: number }) => {
     // Ejecutar la predicción
     setIsLoading(true);
   try {
-    const result = await getDurationPrediction(formData);
-    handleNewPrediction(formData, result);
+    const prediction = await getDurationPrediction(formData);
+    setLastPrediction(prediction);
   } catch (error) {
     console.error("Error obteniendo predicción:", error);
   } finally {
@@ -203,58 +188,6 @@ return (
             </select>
           </div>
         ))}
-
-        {/* Hora inicio */}
-        <div>
-          <label htmlFor="hora_inicio" className="block text-sm font-medium mb-1">
-            Hora de inicio
-          </label>
-          <input
-            type="time"
-            id="hora_inicio"
-            name="hora_inicio"
-            value={formData.hora_inicio}
-            onChange={handleTimeChange}
-            className={`w-full rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-              errors.hora_inicio
-                ? 'border-red-500 focus:ring-red-500 border-2 animate-shake bg-white dark:bg-gray-700 text-black dark:text-white'
-                : 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white'
-            }`}
-          />
-        </div>
-
-        {/* Día semana */}
-        <div>
-          <label htmlFor="dia_semana_inicio" className="block text-sm font-medium mb-1">
-            Día de la semana
-          </label>
-          <select
-            id="dia_semana_inicio"
-            name="dia_semana_inicio"
-            value={formData.dia_semana_inicio}
-            onChange={handleChange}
-            className={`w-full rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-              errors.dia_semana_inicio
-                ? 'border-red-500 focus:ring-red-500 border-2 animate-shake bg-white dark:bg-gray-700 text-black dark:text-white'
-                : 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white'
-            }`}
-          >
-            <option value="">Seleccione un día</option>
-            {[
-              "Lunes",
-              "Martes",
-              "Miércoles",
-              "Jueves",
-              "Viernes",
-              "Sábado",
-              "Domingo",
-            ].map((dia) => (
-              <option key={dia} value={dia}>
-                {dia}
-              </option>
-            ))}
-          </select>
-        </div>
 
         {/* Turno */}
         <div>

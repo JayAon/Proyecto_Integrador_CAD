@@ -1,12 +1,11 @@
 export interface Prediction {
-  referencia: string;
   maquina: string;
   seccion: string;
   proceso: string;
   usuario: string;
-  hora_inicio: string;
-  dia_semana_inicio: string;
+  fabricadas: number;
   turno: string;
-  fabricadas: string;
+  referencia: string;
   duracion: number;
+  optimal: boolean;
 }

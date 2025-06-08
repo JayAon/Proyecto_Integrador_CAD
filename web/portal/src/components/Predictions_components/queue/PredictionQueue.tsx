@@ -119,10 +119,9 @@ return (
                         <p><strong>Sección:</strong> {p.seccion}</p>
                         <p><strong>Proceso:</strong> {p.proceso}</p>
                         <p><strong>Usuario:</strong> {p.usuario}</p>
-                        <p><strong>Hora inicio:</strong> {p.hora_inicio}</p>
-                        <p><strong>Día semana:</strong> {p.dia_semana_inicio}</p>
                         <p><strong>Turno:</strong> {p.turno}</p>
                         <p><strong>Fabricadas:</strong> {p.fabricadas}</p>
+                        <p><strong>Optimal:</strong> {p.optimal ? "Si" : "No"}</p>
                       </motion.div>
                     )}
                   </AnimatePresence>

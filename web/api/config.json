@@ -1,0 +1,22 @@
+{
+  "regression_model": {
+    "path": "models/regression.joblib",
+    "features": {
+      "maquina": "str",
+      "seccion": "str",
+      "proceso": "str",
+      "usuario": "str",
+      "fabricadas": "int",
+      "turno": "str"
+    }
+  },
+  "classification_model": {
+    "path": "models/classification.joblib",
+    "features": {
+      "fabricadas": "int",
+      "referencia": "str",
+      "maquina": "str",
+      "proceso": "str"
+    }
+  }
+}

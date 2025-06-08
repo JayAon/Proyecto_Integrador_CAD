@@ -8,3 +8,6 @@ web/portal/node_modules
 *.zip
 .vscode/
 # Ignore Visual Studio Code settings directory
+
+#Ignore all .env
+*.env
